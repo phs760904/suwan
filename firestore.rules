@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'phs760904@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidProperty(data) {
+      return data.keys().hasAll(['title', 'propertyType', 'transactionType', 'address', 'createdAt'])
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 100
+        && data.propertyType in ['apartment', 'commercial', 'oneroom']
+        && data.transactionType in ['sale', 'jeonse', 'monthly', 'rent']
+        && data.address is string && data.address.size() > 0 && data.address.size() <= 200
+        && (!('price' in data) || (data.price is string && data.price.size() <= 100))
+        && (!('priceValue' in data) || data.priceValue is number)
+        && (!('deposit' in data) || (data.deposit is string && data.deposit.size() <= 100))
+        && (!('monthlyRent' in data) || (data.monthlyRent is string && data.monthlyRent.size() <= 100))
+        && (!('premium' in data) || (data.premium is string && data.premium.size() <= 100))
+        && (!('addressDetail' in data) || (data.addressDetail is string && data.addressDetail.size() <= 200))
+        && (!('lat' in data) || data.lat is number)
+        && (!('lng' in data) || data.lng is number)
+        && (!('supplyArea' in data) || data.supplyArea is number)
+        && (!('exclusiveArea' in data) || data.exclusiveArea is number)
+        && (!('floor' in data) || data.floor is number)
+        && (!('totalFloors' in data) || data.totalFloors is number)
+        && (!('direction' in data) || (data.direction is string && data.direction.size() <= 50))
+        && (!('parking' in data) || (data.parking is string && data.parking.size() <= 100))
+        && (!('maintenanceCost' in data) || (data.maintenanceCost is string && data.maintenanceCost.size() <= 100))
+        && (!('moveInDate' in data) || (data.moveInDate is string && data.moveInDate.size() <= 100))
+        && (!('recommendedUsage' in data) || (data.recommendedUsage is string && data.recommendedUsage.size() <= 200))
+        && (!('commercialAnalysis' in data) || (data.commercialAnalysis is string && data.commercialAnalysis.size() <= 2000))
+        && (!('description' in data) || (data.description is string && data.description.size() <= 5000))
+        && (!('features' in data) || (data.features is list && data.features.size() <= 30))
+        && (!('images' in data) || (data.images is list && data.images.size() <= 50))
+        && (!('mainImageIndex' in data) || data.mainImageIndex is number)
+        && (!('status' in data) || data.status in ['available', 'completed'])
+        && (!('isVisible' in data) || data.isVisible is bool)
+        && (!('isFeatured' in data) || data.isFeatured is bool)
+        && (!('viewCount' in data) || data.viewCount is number)
+        && (!('authorUid' in data) || (data.authorUid is string && data.authorUid.size() <= 128))
+        && data.createdAt is string && data.createdAt.size() <= 50
+        && (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50));
+    }
+
+    function isValidInquiry(data) {
+      return data.keys().hasAll(['name', 'phone', 'message', 'createdAt'])
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 50
+        && data.phone is string && data.phone.size() > 0 && data.phone.size() <= 30
+        && data.message is string && data.message.size() > 0 && data.message.size() <= 1000
+        && (!('propertyId' in data) || (data.propertyId is string && data.propertyId.size() <= 128))
+        && (!('propertyTitle' in data) || (data.propertyTitle is string && data.propertyTitle.size() <= 100))
+        && (!('status' in data) || data.status in ['pending', 'completed'])
+        && data.createdAt is string && data.createdAt.size() <= 50;
+    }
+
+    // Property listings
+    match /properties/{propertyId} {
+      allow get: if (resource.data.isVisible == true) || isAdmin();
+      allow list: if (resource.data.isVisible == true) || isAdmin();
+      allow create: if isAdmin() && isValidId(propertyId) && isValidProperty(request.resource.data);
+      allow update: if isAdmin() && isValidId(propertyId) && isValidProperty(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Customer inquiries (consultation requests)
+    match /inquiries/{inquiryId} {
+      allow create: if isValidId(inquiryId) && isValidInquiry(request.resource.data);
+      allow get, list: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Administrators table
+    match /admins/{adminId} {
+      allow get, list: if isAdmin();
+      allow create, update, delete: if isAdmin() && isValidId(adminId);
+    }
+  }
+}

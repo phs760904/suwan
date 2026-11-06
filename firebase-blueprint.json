@@ -1,0 +1,245 @@
+{
+  "entities": {
+    "Property": {
+      "title": "Property",
+      "description": "Real estate listing document in Suwan New City brokerage",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Property title",
+          "maxLength": 100
+        },
+        "propertyType": {
+          "type": "string",
+          "description": "Property type: apartment, commercial, oneroom",
+          "enum": ["apartment", "commercial", "oneroom"]
+        },
+        "transactionType": {
+          "type": "string",
+          "description": "Transaction type: sale, jeonse, monthly, rent",
+          "enum": ["sale", "jeonse", "monthly", "rent"]
+        },
+        "price": {
+          "type": "string",
+          "description": "Formatted price text, e.g. 5억 2,000만원",
+          "maxLength": 100
+        },
+        "priceValue": {
+          "type": "number",
+          "description": "Numeric price for sorting (unit in 10,000 KRW)"
+        },
+        "deposit": {
+          "type": "string",
+          "description": "Deposit amount text",
+          "maxLength": 100
+        },
+        "monthlyRent": {
+          "type": "string",
+          "description": "Monthly rent text",
+          "maxLength": 100
+        },
+        "premium": {
+          "type": "string",
+          "description": "Premium (권리금) for commercial",
+          "maxLength": 100
+        },
+        "address": {
+          "type": "string",
+          "description": "Primary address",
+          "maxLength": 200
+        },
+        "addressDetail": {
+          "type": "string",
+          "description": "Detailed building/unit address",
+          "maxLength": 200
+        },
+        "lat": {
+          "type": "number",
+          "description": "Latitude coordinate"
+        },
+        "lng": {
+          "type": "number",
+          "description": "Longitude coordinate"
+        },
+        "supplyArea": {
+          "type": "number",
+          "description": "Supply area in square meters"
+        },
+        "exclusiveArea": {
+          "type": "number",
+          "description": "Exclusive private area in square meters"
+        },
+        "floor": {
+          "type": "number",
+          "description": "Current floor"
+        },
+        "totalFloors": {
+          "type": "number",
+          "description": "Total building floors"
+        },
+        "direction": {
+          "type": "string",
+          "description": "Facing direction (남향, 남동향 등)",
+          "maxLength": 50
+        },
+        "parking": {
+          "type": "string",
+          "description": "Parking availability and capacity",
+          "maxLength": 100
+        },
+        "maintenanceCost": {
+          "type": "string",
+          "description": "Monthly maintenance cost",
+          "maxLength": 100
+        },
+        "moveInDate": {
+          "type": "string",
+          "description": "Available move-in date",
+          "maxLength": 100
+        },
+        "recommendedUsage": {
+          "type": "string",
+          "description": "Recommended business type for commercial properties",
+          "maxLength": 200
+        },
+        "commercialAnalysis": {
+          "type": "string",
+          "description": "Commercial zone and location analysis",
+          "maxLength": 2000
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the property",
+          "maxLength": 5000
+        },
+        "features": {
+          "type": "array",
+          "description": "Key highlight tags"
+        },
+        "images": {
+          "type": "array",
+          "description": "Array of image URLs or base64 data URLs"
+        },
+        "mainImageIndex": {
+          "type": "number",
+          "description": "Index of the primary representative photo"
+        },
+        "status": {
+          "type": "string",
+          "description": "Listing status: available or completed",
+          "enum": ["available", "completed"]
+        },
+        "isVisible": {
+          "type": "boolean",
+          "description": "Whether the listing is visible to the public"
+        },
+        "isFeatured": {
+          "type": "boolean",
+          "description": "Whether to highlight in recommended listings"
+        },
+        "viewCount": {
+          "type": "number",
+          "description": "Listing view count"
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "Admin UID who registered the listing",
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": ["title", "propertyType", "transactionType", "address", "createdAt"]
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "Client consultation requests",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Customer name",
+          "maxLength": 50
+        },
+        "phone": {
+          "type": "string",
+          "description": "Customer phone number",
+          "maxLength": 30
+        },
+        "propertyId": {
+          "type": "string",
+          "description": "Optional associated property ID",
+          "maxLength": 128
+        },
+        "propertyTitle": {
+          "type": "string",
+          "description": "Optional property title",
+          "maxLength": 100
+        },
+        "message": {
+          "type": "string",
+          "description": "Consultation inquiry details",
+          "maxLength": 1000
+        },
+        "status": {
+          "type": "string",
+          "description": "Inquiry status: pending or completed",
+          "enum": ["pending", "completed"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["name", "phone", "message", "createdAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Admin user profile document",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Admin email address",
+          "maxLength": 100
+        },
+        "name": {
+          "type": "string",
+          "description": "Admin full name",
+          "maxLength": 50
+        },
+        "role": {
+          "type": "string",
+          "description": "Role level",
+          "enum": ["admin", "superadmin"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["email", "role", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/properties/{propertyId}": {
+      "schema": "Property",
+      "description": "Property listings accessible to public for browsing and admins for CRUD"
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "Customer inquiries created by public, managed by admins"
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Admin users permissions table"
+    }
+  }
+}

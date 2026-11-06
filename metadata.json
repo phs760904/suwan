@@ -1,0 +1,6 @@
+{
+  "name": "수완신도시공인중개사사무소",
+  "description": "광주 수완지구 부동산의 새로운 기준, 수완신도시공인중개사사무소 공식 홈페이지. 아파트, 상가, 원룸 매물 검색 및 지도 연동 서비스.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
